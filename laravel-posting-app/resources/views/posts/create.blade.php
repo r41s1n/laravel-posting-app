@@ -1,10 +1,11 @@
+@if(false) {{-- ★ここから --}}
 <!DOCTYPE html>
 <html lang="ja">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>投稿詳細</title>
+    <title>新規投稿</title>
 
     {{-- Bootstrap --}}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
@@ -43,44 +44,43 @@
 
         <main>
             <div class="container">
-                <!-- <h1>投稿詳細</h1> -->
-                <h1 class="fs-2 my-3">投稿詳細</h1>
+                <!-- <h1>新規投稿</h1> -->
+                <h1 class="fs-2 my-3">新規投稿</h1>
 
-                @if (session('flash_message'))
-                <!-- <p>{{ session('flash_message') }}</p> -->
-                <p class="text-success">{{ session('flash_message') }}</p>
+
+                @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endif
+
                 <div class="mb-2">
                     <!-- <a href="{{ route('posts.index') }}">&lt; 戻る</a> -->
                     <a href="{{ route('posts.index') }}" class="text-decoration-none">&lt; 戻る</a>
                 </div>
 
-                <article>
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <!-- <h2>{{ $post->title }}</h2> -->
-                            <h2 class="card-title fs-5">{{ $post->title }}</h2>
-                            <!-- <p>{{ $post->content }}</p> -->
-                            <p class="card-text">{{ $post->content }}</p>
-
-                            <p class="text-muted small">{{ $post->updated_at }}</p>
-
-                            @if ($post->user_id === Auth::id())
-                            <div class="d-flex">
-                                <!-- <a href="{{ route('posts.edit', $post) }}">編集</a> -->
-                                <a href="{{ route('posts.edit', $post) }}" class="btn btn-outline-primary d-block me-1">編集</a>
-
-                                <form action="{{ route('posts.destroy', $post) }}" method="POST" onsubmit="return confirm('本当に削除してもよろしいですか？');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <!-- <button type="submit">削除</button> -->
-                                    <button type="submit" class="btn btn-outline-danger">削除</button>
-                                </form>
-                            </div>
-                            @endif
-                        </div>
+                <form action="{{ route('posts.store') }}" method="POST">
+                    @csrf
+                    <!-- <div> -->
+                    <div class="form-group mb-3">
+                        <label for="title">タイトル</label>
+                        <!-- <input type="text" id="title" name="title" value="{{ old('title') }}"> -->
+                        <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}">
                     </div>
-                </article>
+                    <!-- <div> -->
+                    <div class="form-group mb-3">
+                        <label for="content">本文</label>
+                        <!-- <textarea id="content" name="content"></textarea> -->
+                        <!-- <textarea id="content" name="content">{{ old('content') }}</textarea> -->
+                        <textarea class="form-control" id="content" name="content">{{ old('content') }}</textarea>
+                    </div>
+                    <!-- <button type="submit">投稿</button> -->
+                    <button type="submit" class="btn btn-outline-primary">投稿</button>
+                </form>
             </div>
         </main>
 
@@ -96,3 +96,37 @@
 </body>
 
 </html>
+@endif {{-- ★ここまで無効化される --}}
+
+@extends('layouts.app')
+
+@section('title', '新規投稿')
+
+@section('content')
+@if ($errors->any())
+<div class="alert alert-danger">
+    <ul>
+        @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+        @endforeach
+    </ul>
+</div>
+@endif
+
+<div class="mb-2">
+    <a href="{{ route('posts.index') }}" class="text-decoration-none">&lt; 戻る</a>
+</div>
+
+<form action="{{ route('posts.store') }}" method="POST">
+    @csrf
+    <div class="form-group mb-3">
+        <label for="title">タイトル</label>
+        <input type="text" class="form-control" id="title" name="title" value="{{ old('title') }}">
+    </div>
+    <div class="form-group mb-3">
+        <label for="content">本文</label>
+        <textarea class="form-control" id="content" name="content">{{ old('content') }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-outline-primary">投稿</button>
+</form>
+@endsection
